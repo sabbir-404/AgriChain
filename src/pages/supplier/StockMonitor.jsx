@@ -18,10 +18,10 @@ const StockMonitor = () => {
       console.error('API Error:', err);
       // Fallback
       setStock([
-        { id: 1, item: 'NPK Fertiliser', current_stock: 4.2, reorder_level: 5, reorder_qty: 15, auto_order_enabled: 1 },
-        { id: 2, item: 'Wheat', current_stock: 8, reorder_level: 10, reorder_qty: 50, auto_order_enabled: 1 },
-        { id: 3, item: 'Soybean Seeds', current_stock: 1.2, reorder_level: 2, reorder_qty: 5, auto_order_enabled: 1 },
-        { id: 4, item: 'Packaging 10kg', current_stock: 800, reorder_level: 500, reorder_qty: 2000, auto_order_enabled: 0 }
+        { id: 1, item: 'NPK Fertiliser', category: 'Fertilizers', usage_rates: '50kg/ha', current_stock: 4.2, reorder_level: 5, reorder_qty: 15, procurement_schedules: 'Monthly', auto_order_enabled: 1 },
+        { id: 2, item: 'Wheat Seeds', category: 'Seeds', usage_rates: '100kg/ha', current_stock: 8, reorder_level: 10, reorder_qty: 50, procurement_schedules: 'Quarterly', auto_order_enabled: 1 },
+        { id: 3, item: 'Soybean Seeds', category: 'Seeds', usage_rates: '80kg/ha', current_stock: 1.2, reorder_level: 2, reorder_qty: 5, procurement_schedules: 'Bi-annual', auto_order_enabled: 1 },
+        { id: 4, item: 'Glyphosate Pesticide', category: 'Pesticides', usage_rates: '2L/ha', current_stock: 800, reorder_level: 500, reorder_qty: 2000, procurement_schedules: 'Annual', auto_order_enabled: 0 }
       ]);
     } finally {
       setLoading(false);
@@ -47,16 +47,20 @@ const StockMonitor = () => {
         <p>Auto-reorder thresholds and current stock vs reorder points</p>
       </div>
       <div className="card">
-        <div className="section-header"><h3>🔄 Reorder Settings</h3></div>
-        <table>
-          <thead><tr><th>Item</th><th>Current Stock</th><th>Reorder Level</th><th>Reorder Qty</th><th>Auto-Order</th><th>Action</th></tr></thead>
+        <div className="section-header">
+          <h3>🔄 Monitoring of inputs such as seeds, fertilizers, and pesticides</h3>
+        </div>
+        <table style={{fontSize: '0.9rem'}}>
+          <thead><tr><th>Item</th><th>Category</th><th>usage rates</th><th>Current Stock</th><th>Reorder Level</th><th>procurement schedules</th><th>Auto-Order</th><th>Action</th></tr></thead>
           <tbody>
             {stock.map((s) => (
               <tr key={s.id}>
                 <td>{s.item}</td>
-                <td>{s.current_stock}{s.item.includes('Packaging') ? ' pcs' : 't'}</td>
-                <td>{s.reorder_level}{s.item.includes('Packaging') ? ' pcs' : 't'}</td>
-                <td>{s.reorder_qty}{s.item.includes('Packaging') ? ' pcs' : 't'}</td>
+                <td>{s.category}</td>
+                <td>{s.usage_rates || 'N/A'}</td>
+                <td>{s.current_stock}{!s.item.includes('Pesticide') ? 't' : ' L'}</td>
+                <td>{s.reorder_level}{!s.item.includes('Pesticide') ? 't' : ' L'}</td>
+                <td>{s.procurement_schedules || 'N/A'}</td>
                 <td>
                   <Badge 
                     text={s.auto_order_enabled ? 'Enabled' : 'Disabled'} 

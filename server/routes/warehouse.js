@@ -14,12 +14,14 @@ router.get('/inventory', async (req, res) => {
 
 router.post('/inventory', async (req, res) => {
   try {
-    const { sku, product, category, qty_tonnes, location, expiry, status } = req.body;
+    const { sku, product, category, qty_tonnes, capacity, location, expiry, storage_requirements, shelf_life, packaging_details, supplier_information } = req.body;
     const [result] = await db.query(
-      'INSERT INTO inventory_items (sku, product, category, qty_tonnes, capacity, location, expiry, status) VALUES (?, ?, ?, ?, 100, ?, ?, ?)',
-      [sku, product, category, qty_tonnes, location, expiry, status]
+      `INSERT INTO inventory_items 
+       (sku, product, category, qty_tonnes, capacity, location, expiry, storage_requirements, shelf_life, packaging_details, supplier_information, status) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [sku, product, category, qty_tonnes, capacity, location, expiry, storage_requirements, shelf_life, packaging_details, supplier_information, 'In Stock']
     );
-    res.json({ id: result.insertId, ...req.body });
+    res.json({ id: result.insertId, sku, product, category, qty_tonnes, capacity, location, expiry, storage_requirements, shelf_life, packaging_details, supplier_information, status: 'In Stock' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

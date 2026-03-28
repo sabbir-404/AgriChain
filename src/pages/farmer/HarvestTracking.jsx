@@ -10,6 +10,8 @@ const HarvestTracking = () => {
     harvest_date: '2025-03-10',
     quantity_tonnes: 5.8,
     grade: 'Grade A (Premium)',
+    storage_conditions: 'Dry, Ambient',
+    movement_tracking: 'Direct transfer to KL Central',
     destination: 'Warehouse Central — KL'
   });
 
@@ -78,6 +80,14 @@ const HarvestTracking = () => {
                 <option>Grade B (Standard)</option>
                 <option>Grade C (Commercial)</option>
               </select>
+            </div>
+            <div className="form-group">
+              <label>Storage Conditions</label>
+              <input type="text" className="form-control" value={formData.storage_conditions} onChange={e => setFormData({...formData, storage_conditions: e.target.value})}/>
+            </div>
+            <div className="form-group">
+              <label>Movement across storage facilities or processing units</label>
+              <input type="text" className="form-control" value={formData.movement_tracking} onChange={e => setFormData({...formData, movement_tracking: e.target.value})}/>
             </div>
             <div className="form-group">
               <label>Destination Warehouse</label>

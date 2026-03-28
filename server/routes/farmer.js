@@ -16,12 +16,14 @@ router.get('/sowing', async (req, res) => {
 // Add sowing record
 router.post('/sowing', async (req, res) => {
   try {
-    const { plot, crop_type, sowing_date, seed_qty, variety, fertiliser, notes } = req.body;
+    const { plot, crop_type, seed_type, sowing_date, expected_harvest_date, seed_qty, variety, fertiliser, pesticides, usage_rates, notes } = req.body;
     const [result] = await db.query(
-      'INSERT INTO sowing_records (plot, crop_type, sowing_date, seed_qty, variety, fertiliser, notes) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [plot, crop_type, sowing_date, seed_qty, variety, fertiliser, notes]
+      `INSERT INTO sowing_records 
+       (plot, crop_type, seed_type, sowing_date, expected_harvest_date, seed_qty, variety, fertiliser, pesticides, usage_rates, notes, status) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [plot, crop_type, seed_type, sowing_date, expected_harvest_date, seed_qty, variety, fertiliser, pesticides, usage_rates, notes, 'Growing']
     );
-    res.json({ id: result.insertId, ...req.body });
+    res.json({ id: result.insertId, plot, crop_type, seed_type, sowing_date, expected_harvest_date, seed_qty, variety, fertiliser, pesticides, usage_rates, notes, status: 'Growing' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -40,13 +42,14 @@ router.get('/harvest', async (req, res) => {
 // Add harvest record
 router.post('/harvest', async (req, res) => {
   try {
-    const { plot, harvest_date, quantity_tonnes, grade, destination } = req.body;
-    const batch_id = `BATCH-#2025-${plot}-${Date.now().toString().slice(-4)}`;
+    const { batch_id, plot, harvest_date, quantity_tonnes, grade, storage_conditions, movement_tracking, destination } = req.body;
     const [result] = await db.query(
-      'INSERT INTO harvest_records (batch_id, plot, harvest_date, quantity_tonnes, grade, destination) VALUES (?, ?, ?, ?, ?, ?)',
-      [batch_id, plot, harvest_date, quantity_tonnes, grade, destination]
+      `INSERT INTO harvest_records 
+       (batch_id, plot, harvest_date, quantity_tonnes, grade, storage_conditions, movement_tracking, destination, status) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [batch_id, plot, harvest_date, quantity_tonnes, grade, storage_conditions, movement_tracking, destination, 'Delivered']
     );
-    res.json({ id: result.insertId, batch_id, ...req.body });
+    res.json({ id: result.insertId, batch_id, plot, harvest_date, quantity_tonnes, grade, storage_conditions, movement_tracking, destination, status: 'Delivered' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

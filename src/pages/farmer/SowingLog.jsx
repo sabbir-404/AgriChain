@@ -8,10 +8,14 @@ const SowingLog = () => {
   const [formData, setFormData] = useState({
     plot: 'Plot A1 — Paddy Field',
     crop_type: 'Paddy (Rice)',
+    seed_type: 'Hybrid MR219',
     sowing_date: '2025-01-15',
+    expected_harvest_date: '2025-05-15',
     seed_qty: 120,
     variety: 'MR219 Elite',
     fertiliser: 'NPK 15-15-15, 50kg/ha',
+    pesticides: 'None',
+    usage_rates: '50kg/ha',
     notes: 'Good soil moisture. Applied pre-emergent herbicide.'
   });
 
@@ -74,23 +78,43 @@ const SowingLog = () => {
               <option>Wheat</option>
             </select>
           </div>
+          <div className="form-group">
+            <label>Seed Type</label>
+            <input type="text" className="form-control" value={formData.seed_type} onChange={e => setFormData({...formData, seed_type: e.target.value})}/>
+          </div>
           <div className="two-col" style={{gap: '12px'}}>
             <div className="form-group">
               <label>Sowing Date</label>
               <input type="date" className="form-control" value={formData.sowing_date} onChange={e => setFormData({...formData, sowing_date: e.target.value})}/>
             </div>
             <div className="form-group">
+              <label>Expected Harvest Date</label>
+              <input type="date" className="form-control" value={formData.expected_harvest_date} onChange={e => setFormData({...formData, expected_harvest_date: e.target.value})}/>
+            </div>
+          </div>
+          <div className="two-col" style={{gap: '12px'}}>
+            <div className="form-group">
               <label>Seed Qty (kg)</label>
               <input type="number" className="form-control" value={formData.seed_qty} onChange={e => setFormData({...formData, seed_qty: e.target.value})}/>
             </div>
-          </div>
-          <div className="form-group">
-            <label>Seed Variety</label>
-            <input type="text" className="form-control" value={formData.variety} onChange={e => setFormData({...formData, variety: e.target.value})}/>
+            <div className="form-group">
+              <label>Seed Variety</label>
+              <input type="text" className="form-control" value={formData.variety} onChange={e => setFormData({...formData, variety: e.target.value})}/>
+            </div>
           </div>
           <div className="form-group">
             <label>Fertiliser Applied</label>
             <input type="text" className="form-control" value={formData.fertiliser} onChange={e => setFormData({...formData, fertiliser: e.target.value})}/>
+          </div>
+          <div className="two-col" style={{gap: '12px'}}>
+            <div className="form-group">
+              <label>Pesticides</label>
+              <input type="text" className="form-control" value={formData.pesticides} onChange={e => setFormData({...formData, pesticides: e.target.value})}/>
+            </div>
+            <div className="form-group">
+              <label>Usage Rates</label>
+              <input type="text" className="form-control" value={formData.usage_rates} onChange={e => setFormData({...formData, usage_rates: e.target.value})}/>
+            </div>
           </div>
           <div className="form-group">
             <label>Notes</label>

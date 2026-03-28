@@ -53,7 +53,7 @@ const WarehouseDashboard = () => {
         </div>
         <div>
           <div className="card">
-            <div className="section-header"><h3>🌡️ Storage Sensors</h3></div>
+            <div className="section-header"><h3 style={{fontSize: '1rem'}}>🌡️ Integration with sensors to monitor storage conditions such as temperature and humidity</h3></div>
             <div style={{display:'flex',flexDirection:'column',gap:'12px'}}>
               <div>
                 <div style={{display:'flex',justifyContent:'space-between',fontSize:'0.85rem'}}><span>Zone A — Cold Storage</span><strong>15°C</strong></div>

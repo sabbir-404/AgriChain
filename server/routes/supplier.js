@@ -38,9 +38,12 @@ router.get('/stock', async (req, res) => {
 router.put('/stock/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { auto_order_enabled } = req.body;
-    await db.query('UPDATE stock_settings SET auto_order_enabled = ? WHERE id = ?', [auto_order_enabled, id]);
-    res.json({ success: true, id, auto_order_enabled });
+    const { reorder_level, reorder_qty, auto_order_enabled, input_category, procurement_schedules } = req.body;
+    await db.query(
+      'UPDATE stock_settings SET reorder_level = ?, reorder_qty = ?, auto_order_enabled = ?, input_category = ?, procurement_schedules = ? WHERE id = ?',
+      [reorder_level, reorder_qty, auto_order_enabled, input_category, procurement_schedules, id]
+    );
+    res.json({ message: 'Settings updated' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

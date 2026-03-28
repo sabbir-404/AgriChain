@@ -16,10 +16,14 @@ CREATE TABLE IF NOT EXISTS sowing_records (
   id INT AUTO_INCREMENT PRIMARY KEY,
   plot VARCHAR(100) NOT NULL,
   crop_type VARCHAR(100) NOT NULL,
+  seed_type VARCHAR(100),
   sowing_date DATE NOT NULL,
+  expected_harvest_date DATE,
   seed_qty DECIMAL(10,2),
   variety VARCHAR(100),
   fertiliser VARCHAR(255),
+  pesticides VARCHAR(255),
+  usage_rates VARCHAR(100),
   notes TEXT,
   status VARCHAR(50) DEFAULT 'Growing'
 );
@@ -31,6 +35,8 @@ CREATE TABLE IF NOT EXISTS harvest_records (
   harvest_date DATE NOT NULL,
   quantity_tonnes DECIMAL(10,2),
   grade VARCHAR(50),
+  storage_conditions VARCHAR(255),
+  movement_tracking VARCHAR(255),
   destination VARCHAR(255),
   status VARCHAR(50) DEFAULT 'Delivered'
 );
@@ -44,6 +50,10 @@ CREATE TABLE IF NOT EXISTS inventory_items (
   capacity DECIMAL(10,2),
   location VARCHAR(100),
   expiry DATE,
+  storage_requirements VARCHAR(255),
+  shelf_life VARCHAR(100),
+  packaging_details VARCHAR(255),
+  supplier_information VARCHAR(255),
   status VARCHAR(50)
 );
 
@@ -85,9 +95,11 @@ CREATE TABLE IF NOT EXISTS purchase_orders (
 CREATE TABLE IF NOT EXISTS stock_settings (
   id INT AUTO_INCREMENT PRIMARY KEY,
   item VARCHAR(100) NOT NULL,
+  input_category VARCHAR(50),
   current_stock DECIMAL(10,2),
   reorder_level DECIMAL(10,2),
   reorder_qty DECIMAL(10,2),
+  procurement_schedules VARCHAR(255),
   auto_order_enabled BOOLEAN DEFAULT TRUE
 );
 
