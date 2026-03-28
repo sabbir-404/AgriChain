@@ -30,9 +30,9 @@ const Login = () => {
         {error && <div className="alert alert-danger" style={{ marginBottom: '15px' }}>{error}</div>}
         <form onSubmit={handleLogin}>
           <div className="form-group" style={{ textAlign: 'left' }}>
-            <label>Email Address</label>
+            <label>Email or Username</label>
             <input 
-              type="email" 
+              type="text" 
               className="form-control" 
               value={email} 
               onChange={e => setEmail(e.target.value)} 

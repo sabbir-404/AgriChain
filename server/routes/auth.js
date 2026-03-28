@@ -45,7 +45,8 @@ router.post('/login', async (req, res) => {
   }
 
   try {
-    const [users] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
+    // Check by email OR name
+    const [users] = await db.query('SELECT * FROM users WHERE email = ? OR name = ?', [email, email]);
     if (users.length === 0) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
