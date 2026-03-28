@@ -5,11 +5,13 @@ import warehouseRoutes from './routes/warehouse.js';
 import processingRoutes from './routes/processing.js';
 import supplierRoutes from './routes/supplier.js';
 import adminRoutes from './routes/admin.js';
+import authRoutes from './routes/auth.js';
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.use('/api/auth', authRoutes);
 app.use('/api/farmer', farmerRoutes);
 app.use('/api/warehouse', warehouseRoutes);
 app.use('/api/processing', processingRoutes);

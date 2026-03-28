@@ -1,7 +1,8 @@
 import { useContext } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { RoleContext } from './context/RoleContext';
-import RoleSelector from './components/RoleSelector';
+import Login from './pages/auth/Login';
+import Register from './pages/auth/Register';
 import Layout from './components/Layout';
 
 // Farmer Pages
@@ -32,10 +33,16 @@ import UserManagement from './pages/admin/UserManagement';
 import SystemAlerts from './pages/admin/SystemAlerts';
 
 function App() {
-  const { currentRole } = useContext(RoleContext);
+  const { currentRole, user } = useContext(RoleContext);
 
-  if (!currentRole) {
-    return <RoleSelector />;
+  if (!user) {
+    return (
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    );
   }
 
   return (

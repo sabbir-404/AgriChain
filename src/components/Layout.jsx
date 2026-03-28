@@ -3,13 +3,13 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { RoleContext } from '../context/RoleContext';
 
 const Layout = ({ children }) => {
-  const { currentRole, setCurrentRoleKey } = useContext(RoleContext);
+  const { currentRole, logout } = useContext(RoleContext);
   const location = useLocation();
   const navigate = useNavigate();
 
   const handleSwitchRole = () => {
-    setCurrentRoleKey(null);
-    navigate('/');
+    logout();
+    navigate('/login');
   };
 
   // Find the label for the current page
@@ -46,7 +46,7 @@ const Layout = ({ children }) => {
 
         <div className="sidebar-bottom">
           <button className="switch-role-btn" onClick={handleSwitchRole}>
-            ⇄ Switch Role
+            🚪 Logout
           </button>
         </div>
       </aside>

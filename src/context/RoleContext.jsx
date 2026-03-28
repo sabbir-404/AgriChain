@@ -1,95 +1,91 @@
-import { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
+import axios from 'axios';
 
 export const RoleContext = createContext();
 
-export const ROLES = {
+const ROLES = {
   farmer: {
-    key: 'farmer',
-    name: 'Farmer',
-    user: 'Ahmad Farid',
-    avatar: 'AF',
-    pill: '🌾 Farm: Plot A1',
+    key: 'farmer', name: 'Farmer Hub', user: 'Farmer', avatar: '👨‍🌾', pill: 'Live Sensor Data Active', defaultPage: '/farmer',
     nav: [
-      { section: 'Main' },
-      { id: 'farmer-dashboard', icon: '🏠', label: 'Dashboard', path: '/farmer' },
-      { section: 'Farm Activity' },
-      { id: 'farmer-sowing', icon: '🌱', label: 'Sowing Log', path: '/farmer/sowing' },
-      { id: 'farmer-harvest', icon: '🌾', label: 'Harvest Tracking', path: '/farmer/harvest' },
-      { id: 'farmer-predictions', icon: '📈', label: 'Crop Predictions', path: '/farmer/predictions' },
-    ],
-    defaultPage: '/farmer'
+      { label: 'Farm Dashboard', path: '/farmer', icon: '📊' },
+      { label: 'Sowing Log', path: '/farmer/sowing', icon: '🌱' },
+      { label: 'Harvest Tracking', path: '/farmer/harvest', icon: '🌾' },
+      { label: 'Crop Predictions (AI)', path: '/farmer/predictions', icon: '📈' }
+    ]
   },
   warehouse: {
-    key: 'warehouse',
-    name: 'Warehouse Manager',
-    user: 'Nurul Ain',
-    avatar: 'NA',
-    pill: '🏭 Warehouse: KL Central',
+    key: 'warehouse', name: 'Central Warehouse', user: 'WH_Manager', avatar: '🏭', pill: 'Capacity: 84%', defaultPage: '/warehouse',
     nav: [
-      { section: 'Main' },
-      { id: 'warehouse-dashboard', icon: '🏠', label: 'Dashboard', path: '/warehouse' },
-      { section: 'Operations' },
-      { id: 'warehouse-inventory', icon: '📦', label: 'Inventory', path: '/warehouse/inventory' },
-      { id: 'warehouse-analytics', icon: '📊', label: 'Analytics', path: '/warehouse/analytics' },
-    ],
-    defaultPage: '/warehouse'
+      { label: 'Overview', path: '/warehouse', icon: '📊' },
+      { label: 'Inventory Management', path: '/warehouse/inventory', icon: '📦' },
+      { label: 'Throughput Analytics', path: '/warehouse/analytics', icon: '📈' }
+    ]
   },
   processing: {
-    key: 'processing',
-    name: 'Processing Unit',
-    user: 'Razlan Ibrahim',
-    avatar: 'RI',
-    pill: '⚙️ Unit: Selangor Plant',
+    key: 'processing', name: 'Processing Unit', user: 'Plant_Supervisor', avatar: '⚙️', pill: 'Lines Running: 3', defaultPage: '/processing',
     nav: [
-      { section: 'Main' },
-      { id: 'processing-dashboard', icon: '🏠', label: 'Dashboard', path: '/processing' },
-      { section: 'Operations' },
-      { id: 'processing-batches', icon: '🗂️', label: 'Batch Management', path: '/processing/batches' },
-      { id: 'processing-qc', icon: '🔬', label: 'Quality Control', path: '/processing/qc' },
-    ],
-    defaultPage: '/processing'
+      { label: 'Processing Status', path: '/processing', icon: '🔄' },
+      { label: 'Batch Management', path: '/processing/batches', icon: '📋' },
+      { label: 'Quality Control', path: '/processing/qc', icon: '🔬' }
+    ]
   },
   supplier: {
-    key: 'supplier',
-    name: 'Supplier Portal',
-    user: 'Siti Mariam',
-    avatar: 'SM',
-    pill: '🚚 Supplier Access',
+    key: 'supplier', name: 'Supplier Portal', user: 'Supplier', avatar: '🚚', pill: '2 Orders Pending', defaultPage: '/supplier',
     nav: [
-      { section: 'Main' },
-      { id: 'supplier-dashboard', icon: '🏠', label: 'Dashboard', path: '/supplier' },
-      { section: 'Procurement' },
-      { id: 'supplier-orders', icon: '📋', label: 'Purchase Orders', path: '/supplier/orders' },
-      { id: 'supplier-stock', icon: '📉', label: 'Stock Monitor', path: '/supplier/stock' },
-    ],
-    defaultPage: '/supplier'
+      { label: 'Fulfillment Dashboard', path: '/supplier', icon: '🚚' },
+      { label: 'Purchase Orders', path: '/supplier/orders', icon: '📋' },
+      { label: 'Stock Reorder Levels', path: '/supplier/stock', icon: '📦' }
+    ]
   },
   admin: {
-    key: 'admin',
-    name: 'Admin / Analytics',
-    user: 'Dr. Amirul',
-    avatar: 'DA',
-    pill: '🔧 Admin: All Regions',
+    key: 'admin', name: 'Admin Console', user: 'System_Admin', avatar: '🛡️', pill: 'System Normal', defaultPage: '/admin',
     nav: [
-      { section: 'Main' },
-      { id: 'admin-dashboard', icon: '🏠', label: 'System Overview', path: '/admin' },
-      { section: 'Analytics' },
-      { id: 'admin-analytics', icon: '📊', label: 'Predictive Analytics', path: '/admin/analytics' },
-      { id: 'admin-alerts', icon: '🔔', label: 'Alerts & Rules', path: '/admin/alerts' },
-      { section: 'Administration' },
-      { id: 'admin-users', icon: '👥', label: 'User Management', path: '/admin/users' },
-    ],
-    defaultPage: '/admin'
+      { label: 'System Overview', path: '/admin', icon: '🌐' },
+      { label: 'Predictive Analytics', path: '/admin/analytics', icon: '📈' },
+      { section: 'MANAGEMENT' },
+      { label: 'User Management', path: '/admin/users', icon: '👥' },
+      { label: 'System Alerts & Config', path: '/admin/alerts', icon: '⚙️' }
+    ]
   }
 };
 
 export const RoleProvider = ({ children }) => {
-  const [currentRoleKey, setCurrentRoleKey] = useState(null);
-  
-  const currentRole = currentRoleKey ? ROLES[currentRoleKey] : null;
+  const [token, setToken] = useState(localStorage.getItem('token') || null);
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || null);
+
+  const login = (jwtToken, userData) => {
+    setToken(jwtToken);
+    setUser(userData);
+    localStorage.setItem('token', jwtToken);
+    localStorage.setItem('user', JSON.stringify(userData));
+    axios.defaults.headers.common['Authorization'] = `Bearer ${jwtToken}`;
+  };
+
+  const logout = () => {
+    setToken(null);
+    setUser(null);
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    delete axios.defaults.headers.common['Authorization'];
+  };
+
+  // On mount, apply token if exists
+  useEffect(() => {
+    if (token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    }
+  }, [token]);
+
+  const currentRole = user ? { ...ROLES[user.role], user: user.name } : null;
 
   return (
-    <RoleContext.Provider value={{ currentRole, setCurrentRoleKey, ROLES }}>
+    <RoleContext.Provider value={{
+      token,
+      user,
+      currentRole,
+      login,
+      logout
+    }}>
       {children}
     </RoleContext.Provider>
   );
