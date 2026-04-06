@@ -35,6 +35,10 @@ import SystemOverview from './pages/admin/SystemOverview';
 import PredictiveAnalytics from './pages/admin/PredictiveAnalytics';
 import UserManagement from './pages/admin/UserManagement';
 import SystemAlerts from './pages/admin/SystemAlerts';
+import FarmerDataAdmin from './pages/admin/FarmerDataAdmin';
+import WarehouseDataAdmin from './pages/admin/WarehouseDataAdmin';
+import ProcessingDataAdmin from './pages/admin/ProcessingDataAdmin';
+import SupplierDataAdmin from './pages/admin/SupplierDataAdmin';
 
 function App() {
   const { currentRole, user } = useContext(RoleContext);
@@ -99,6 +103,10 @@ function App() {
               <Route path="/admin/analytics" element={<PageTransition><PredictiveAnalytics /></PageTransition>} />
               <Route path="/admin/users" element={<PageTransition><UserManagement /></PageTransition>} />
               <Route path="/admin/alerts" element={<PageTransition><SystemAlerts /></PageTransition>} />
+              <Route path="/admin/farmer-data" element={<PageTransition><FarmerDataAdmin /></PageTransition>} />
+              <Route path="/admin/warehouse-data" element={<PageTransition><WarehouseDataAdmin /></PageTransition>} />
+              <Route path="/admin/processing-data" element={<PageTransition><ProcessingDataAdmin /></PageTransition>} />
+              <Route path="/admin/supplier-data" element={<PageTransition><SupplierDataAdmin /></PageTransition>} />
             </>
           )}
 

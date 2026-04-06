@@ -44,7 +44,12 @@ const ROLES = {
       { label: 'Predictive Analytics', path: '/admin/analytics', icon: '📈' },
       { section: 'MANAGEMENT' },
       { label: 'User Management', path: '/admin/users', icon: '👥' },
-      { label: 'System Alerts & Config', path: '/admin/alerts', icon: '⚙️' }
+      { label: 'System Alerts & Config', path: '/admin/alerts', icon: '⚙️' },
+      { section: 'DATA MANAGEMENT' },
+      { label: 'Farmer Data', path: '/admin/farmer-data', icon: '🌱' },
+      { label: 'Warehouse Data', path: '/admin/warehouse-data', icon: '📦' },
+      { label: 'Processing Data', path: '/admin/processing-data', icon: '⚙️' },
+      { label: 'Supplier Data', path: '/admin/supplier-data', icon: '🚚' }
     ]
   }
 };

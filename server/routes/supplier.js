@@ -26,6 +26,29 @@ router.post('/orders', async (req, res) => {
   }
 });
 
+router.put('/orders/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { supplier, item, quantity, unit, required_by, delivery_address, status } = req.body;
+    await db.query(
+      'UPDATE purchase_orders SET supplier=?, item=?, quantity=?, unit=?, required_by=?, delivery_address=?, status=? WHERE id=?',
+      [supplier, item, quantity, unit, required_by, delivery_address, status, id]
+    );
+    res.json({ message: 'Order updated' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.delete('/orders/:id', async (req, res) => {
+  try {
+    await db.query('DELETE FROM purchase_orders WHERE id=?', [req.params.id]);
+    res.json({ message: 'Order deleted' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.get('/stock', async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM stock_settings');
@@ -38,12 +61,34 @@ router.get('/stock', async (req, res) => {
 router.put('/stock/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { reorder_level, reorder_qty, auto_order_enabled, input_category, procurement_schedules } = req.body;
+    const { item, input_category, current_stock, reorder_level, reorder_qty, procurement_schedules, auto_order_enabled } = req.body;
     await db.query(
-      'UPDATE stock_settings SET reorder_level = ?, reorder_qty = ?, auto_order_enabled = ?, input_category = ?, procurement_schedules = ? WHERE id = ?',
-      [reorder_level, reorder_qty, auto_order_enabled, input_category, procurement_schedules, id]
+      'UPDATE stock_settings SET item=?, input_category=?, current_stock=?, reorder_level=?, reorder_qty=?, auto_order_enabled=?, procurement_schedules=? WHERE id=?',
+      [item, input_category, current_stock, reorder_level, reorder_qty, auto_order_enabled, procurement_schedules, id]
     );
     res.json({ message: 'Settings updated' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/stock', async (req, res) => {
+  try {
+    const { item, input_category, current_stock, reorder_level, reorder_qty, procurement_schedules, auto_order_enabled } = req.body;
+    const [result] = await db.query(
+      'INSERT INTO stock_settings (item, input_category, current_stock, reorder_level, reorder_qty, procurement_schedules, auto_order_enabled) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [item, input_category, current_stock, reorder_level, reorder_qty, procurement_schedules, auto_order_enabled ?? true]
+    );
+    res.json({ id: result.insertId, ...req.body });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.delete('/stock/:id', async (req, res) => {
+  try {
+    await db.query('DELETE FROM stock_settings WHERE id=?', [req.params.id]);
+    res.json({ message: 'Stock setting deleted' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
