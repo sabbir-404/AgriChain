@@ -128,7 +128,7 @@ h4 {
 /* SIDEBAR */
 .sidebar {
   width: var(--sidebar-w);
-  min-height: 100vh;
+  height: 100vh;        /* MUST be height not min-height for overflow-y scroll to work */
   background: var(--green-dark);
   display: flex;
   flex-direction: column;
@@ -154,29 +154,44 @@ h4 {
 }
 
 .sidebar-logo {
-  padding: 22px 20px 16px;
+  padding: 16px 16px 12px;
   font-family: 'Syne', sans-serif;
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   font-weight: 800;
   color: #fff;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   letter-spacing: -0.5px;
+  flex-shrink: 0;
 }
+
+/* Nav list grows to fill remaining height; scrollable on tiny screens */
+#sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 4px 0 8px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+}
+#sidebar-nav::-webkit-scrollbar { width: 3px; }
+#sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 3px; }
+
 
 .sidebar-logo span {
   color: var(--amber);
 }
 
 .sidebar-role-badge {
-  padding: 12px 20px;
+  padding: 8px 12px;
   background: rgba(255, 255, 255, 0.07);
-  margin: 12px;
+  margin: 8px 12px;
   border-radius: 10px;
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   color: var(--green-pale);
   font-weight: 500;
   letter-spacing: 0.5px;
   text-transform: uppercase;
+  word-break: break-word;
 }
 
 .sidebar-role-badge strong {
@@ -190,27 +205,30 @@ h4 {
 }
 
 .nav-section {
-  padding: 8px 12px 4px;
-  font-size: 0.68rem;
+  padding: 6px 12px 2px;
+  font-size: 0.64rem;
   color: rgba(255, 255, 255, 0.35);
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  margin-top: 8px;
+  margin-top: 4px;
 }
 
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 11px;
-  padding: 11px 16px;
-  margin: 2px 12px;
-  border-radius: 10px;
+  gap: 9px;
+  padding: 8px 12px;
+  margin: 1px 10px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 0.875rem;
+  font-size: 0.84rem;
   color: rgba(255, 255, 255, 0.7);
   font-weight: 500;
   transition: all 0.2s;
   text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .nav-item:hover {
@@ -255,8 +273,9 @@ h4 {
 
 .sidebar-bottom {
   margin-top: auto;
-  padding: 16px;
+  padding: 12px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;  /* Prevents it from shrinking — stays pinned at bottom */
 }
 
 .switch-role-btn {
