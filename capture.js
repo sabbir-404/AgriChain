@@ -1,108 +1,192 @@
+/**
+ * AgriChain — Full Screenshot Capture Script
+ * Usage: node capture.js
+ * Prerequisites: Vite dev server on :5173, backend on :3001, DB seeded
+ *
+ * Strategy: Real login via the API so JWT tokens and role-based routing work correctly.
+ */
 import puppeteer from 'puppeteer';
 import fs from 'fs';
 import path from 'path';
+import axios from 'axios';
 
-// Define the URLs for each role to capture
-const captures = {
-  public: [
-    { name: '1_Home', url: '/' },
-    { name: '2_Login', url: '/login' },
-    { name: '3_Register', url: '/register' }
-  ],
-  admin: [
-    { name: '4_Admin_Dashboard', url: '/admin' },
-    { name: '5_Admin_Analytics', url: '/admin/analytics' },
-    { name: '6_Admin_Users', url: '/admin/users' },
-    { name: '7_Admin_Alerts', url: '/admin/alerts' }
-  ],
-  farmer: [
-    { name: '8_Farmer_Dashboard', url: '/farmer' },
-    { name: '9_Farmer_Sowing', url: '/farmer/sowing' },
-    { name: '10_Farmer_Harvest', url: '/farmer/harvest' },
-    { name: '11_Farmer_Predictions', url: '/farmer/predictions' }
-  ],
-  warehouse: [
-    { name: '12_Warehouse_Dashboard', url: '/warehouse' },
-    { name: '13_Warehouse_Inventory', url: '/warehouse/inventory' },
-    { name: '14_Warehouse_Analytics', url: '/warehouse/analytics' }
-  ],
-  processing: [
-    { name: '15_Processing_Dashboard', url: '/processing' },
-    { name: '16_Processing_Batches', url: '/processing/batches' },
-    { name: '17_Processing_QC', url: '/processing/qc' }
-  ],
-  supplier: [
-    { name: '18_Supplier_Dashboard', url: '/supplier' },
-    { name: '19_Supplier_Orders', url: '/supplier/orders' },
-    { name: '20_Supplier_Stock', url: '/supplier/stock' }
-  ]
+const BASE_URL  = 'http://localhost:5173';
+const API_URL   = 'http://localhost:3001/api';
+
+// ── Credentials for each role (from seed.js) ──────────────────────────────
+const CREDS = {
+  admin:      { email: 'admin@agrichain.com',     password: 'admin123' },
+  farmer:     { email: 'rahim@agrichain.com',      password: 'agrichain123' },
+  supplier:   { email: 'bashir@agrichain.com',     password: 'agrichain123' },
+  warehouse:  { email: 'nasreen@agrichain.com',    password: 'agrichain123' },
+  processing: { email: 'rafique@agrichain.com',    password: 'agrichain123' },
+  quality:    { email: 'salma@agrichain.com',      password: 'agrichain123' },
+  logistics:  { email: 'mosharraf@agrichain.com',  password: 'agrichain123' },
+  market:     { email: 'jahangir@agrichain.com',   password: 'agrichain123' },
 };
 
-const BASE_URL = 'http://localhost:5173';
+// ── All pages to capture, grouped by role ─────────────────────────────────
+const PAGES = {
 
-async function delay(time) {
-  return new Promise(function(resolve) { 
-      setTimeout(resolve, time)
-  });
+  // ── Public ────────────────────────────────────────────────────────────
+  public: [
+    { name: '01_Login',    url: '/login'    },
+    { name: '02_Register', url: '/register' },
+  ],
+
+  // ── Admin ─────────────────────────────────────────────────────────────
+  admin: [
+    { name: '03_Admin_SystemOverview',     url: '/admin'                  },
+    { name: '04_Admin_PredictiveAnalytics',url: '/admin/analytics'        },
+    { name: '05_Admin_FarmerData',         url: '/admin/farmer-data'      },
+    { name: '06_Admin_WarehouseData',      url: '/admin/warehouse-data'   },
+    { name: '07_Admin_ProcessingData',     url: '/admin/processing-data'  },
+    { name: '08_Admin_SupplierData',       url: '/admin/supplier-data'    },
+    { name: '09_Admin_QualityData',        url: '/admin/quality-data'     },
+    { name: '10_Admin_DeliveryData',       url: '/admin/delivery-data'    },
+    { name: '11_Admin_MarketSales',        url: '/admin/market-data'      },
+    { name: '12_Admin_BatchTraceability',  url: '/admin/batch-trace'      },
+    { name: '13_Admin_UserManagement',     url: '/admin/users'            },
+    { name: '14_Admin_SystemAlerts',       url: '/admin/alerts'           },
+  ],
+
+  // ── Farmer ────────────────────────────────────────────────────────────
+  farmer: [
+    { name: '15_Farmer_Dashboard',    url: '/farmer'          },
+    { name: '16_Farmer_SowingLogs',   url: '/farmer/sowing'   },
+    { name: '17_Farmer_Harvest',      url: '/farmer/harvest'  },
+    { name: '18_Farmer_InputSupply',  url: '/farmer/inputs'   },
+  ],
+
+  // ── Supplier ──────────────────────────────────────────────────────────
+  supplier: [
+    { name: '19_Supplier_Dashboard',    url: '/supplier'        },
+    { name: '20_Supplier_InputRecords', url: '/supplier/inputs' },
+  ],
+
+  // ── Warehouse Manager ─────────────────────────────────────────────────
+  warehouse: [
+    { name: '21_Warehouse_Overview',      url: '/warehouse'                 },
+    { name: '22_Warehouse_Warehouses',    url: '/warehouse/warehouses'      },
+    { name: '23_Warehouse_Inventory',     url: '/warehouse/inventory'       },
+    { name: '24_Warehouse_StockMovement', url: '/warehouse/stock-movement'  },
+    { name: '25_Warehouse_SensorMonitor', url: '/warehouse/sensors'         },
+  ],
+
+  // ── Processing Manager ────────────────────────────────────────────────
+  processing: [
+    { name: '26_Processing_Status',  url: '/processing'          },
+    { name: '27_Processing_Plants',  url: '/processing/plants'   },
+    { name: '28_Processing_Batches', url: '/processing/batches'  },
+  ],
+
+  // ── Quality Inspector ─────────────────────────────────────────────────
+  quality: [
+    { name: '29_Quality_Dashboard', url: '/quality'          },
+    { name: '30_Quality_Reports',   url: '/quality/reports'  },
+  ],
+
+  // ── Logistics Manager ─────────────────────────────────────────────────
+  logistics: [
+    { name: '31_Logistics_Dashboard', url: '/logistics'           },
+    { name: '32_Logistics_Delivery',  url: '/logistics/delivery'  },
+  ],
+
+  // ── Market Operator ───────────────────────────────────────────────────
+  market: [
+    { name: '33_Market_Dashboard', url: '/market'          },
+    { name: '34_Market_Markets',   url: '/market/markets'  },
+    { name: '35_Market_Sales',     url: '/market/sales'    },
+  ],
+};
+
+const delay = ms => new Promise(r => setTimeout(r, ms));
+
+// ── Real login via API, then inject token into localStorage ───────────────
+async function loginAs(page, role) {
+  const creds = CREDS[role];
+  console.log(`  🔑 Logging in as ${role} (${creds.email})...`);
+  try {
+    const res = await axios.post(`${API_URL}/auth/login`, creds);
+    const { token, user } = res.data;
+
+    // Inject into the browser's localStorage
+    await page.goto(`${BASE_URL}/login`, { waitUntil: 'domcontentloaded' });
+    await page.evaluate((t, u) => {
+      localStorage.setItem('token', t);
+      localStorage.setItem('user', JSON.stringify(u));
+    }, token, user);
+
+    console.log(`  ✓ Logged in as ${user.first_name} ${user.last_name} [${user.role_type}]`);
+  } catch (err) {
+    console.error(`  ✗ Login failed for ${role}:`, err.message);
+    throw err;
+  }
+}
+
+async function clearSession(page) {
+  await page.evaluate(() => localStorage.clear());
 }
 
 (async () => {
   const outDir = path.join(process.cwd(), 'screenshots');
-  if (!fs.existsSync(outDir)) {
-    fs.mkdirSync(outDir);
+  if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
+
+  // Remove old screenshots so ordering is clean
+  fs.readdirSync(outDir).filter(f => f.endsWith('.png')).forEach(f => {
+    fs.unlinkSync(path.join(outDir, f));
+  });
+  console.log('🗑️  Cleared old screenshots.\n');
+
+  console.log('🚀 Launching browser...');
+
+  // Try Puppeteer's downloaded Chrome first; fall back to system Chrome on macOS
+  const MAC_CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+  const launchOpts = {
+    headless: 'new',
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  };
+  if (fs.existsSync(MAC_CHROME)) {
+    launchOpts.executablePath = MAC_CHROME;
+    console.log('  Using system Chrome →', MAC_CHROME);
   }
 
-  console.log('Launching browser...');
-  const browser = await puppeteer.launch({ headless: "new" });
+  const browser = await puppeteer.launch(launchOpts);
   const page = await browser.newPage();
   await page.setViewport({ width: 1440, height: 900 });
 
-  // 1. Capture Public Pages
-  console.log('Capturing Public Pages...');
-  for (const item of captures.public) {
+  // ── 1. Public pages (no auth needed) ──────────────────────────────────
+  console.log('\n📸 Capturing public pages...');
+  for (const item of PAGES.public) {
     await page.goto(`${BASE_URL}${item.url}`, { waitUntil: 'networkidle0' });
-    await delay(1000); // Wait for animations
+    await delay(1200);
     await page.screenshot({ path: path.join(outDir, `${item.name}.png`), fullPage: true });
-    console.log(`Saved ${item.name}.png`);
+    console.log(`  ✓ ${item.name}`);
   }
 
-  // Helper to mock login via localStorage
-  async function mockLogin(roleKey) {
-    console.log(`Mocking login for role: ${roleKey}...`);
-    await page.evaluate((role) => {
-      // Create a fake JWT token structure that the app expects
-      // The app decodes the token payload, so we just create a base64 encoded payload
-      const payload = {
-        id: 999,
-        name: `Test ${role}`,
-        email: `test@${role}.com`,
-        role: role
-      };
-      const token = 'header.' + btoa(JSON.stringify(payload)) + '.signature';
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(payload));
-    }, roleKey);
-    // Navigate to root to trigger the role redirect
-    await page.goto(`${BASE_URL}/`, { waitUntil: 'networkidle0' });
-    await delay(1500);
-  }
+  // ── 2. Role-gated pages ───────────────────────────────────────────────
+  const ROLE_ORDER = ['admin', 'farmer', 'supplier', 'warehouse', 'processing', 'quality', 'logistics', 'market'];
 
-  // 2. Capture Role Pages
-  const roles = ['admin', 'farmer', 'warehouse', 'processing', 'supplier'];
-  for (const role of roles) {
-    await mockLogin(role);
-    
-    for (const item of captures[role]) {
+  for (const role of ROLE_ORDER) {
+    const pages = PAGES[role];
+    if (!pages || pages.length === 0) continue;
+
+    console.log(`\n📸 Capturing ${role} pages (${pages.length} screens)...`);
+    await loginAs(page, role);
+
+    for (const item of pages) {
       await page.goto(`${BASE_URL}${item.url}`, { waitUntil: 'networkidle0' });
-      await delay(1000); // Let framer-motion animations finish
+      await delay(1800); // Allow charts (recharts) and animations to render
       await page.screenshot({ path: path.join(outDir, `${item.name}.png`), fullPage: true });
-      console.log(`Saved ${item.name}.png`);
+      console.log(`  ✓ ${item.name}`);
     }
-    
-    // Clear localStorage for next user
-    await page.evaluate(() => localStorage.clear());
+
+    await clearSession(page);
   }
 
   await browser.close();
-  console.log('All screenshots captured successfully in /screenshots folder!');
+
+  const total = fs.readdirSync(outDir).filter(f => f.endsWith('.png')).length;
+  console.log(`\n🎉 Done! ${total} screenshots saved to /screenshots`);
+  console.log('   Run: node create-pdf.js  to compile into a PDF.\n');
 })();
