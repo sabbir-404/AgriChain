@@ -176,13 +176,20 @@ const Home = () => {
       </section>
 
       {/* About Us Section */}
-      <section id="about-us" style={{ padding: '80px 20px', background: '#f9fafb', textAlign: 'center', borderTop: '1px solid var(--border)' }}>
-        <h2 style={{ fontSize: '2.5rem', color: 'var(--text-dark)', marginBottom: 20 }}>About Us</h2>
-        <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)', maxWidth: 800, margin: '0 auto 50px', lineHeight: 1.6 }}>
+      <section id="about-us" style={{ padding: '40px 20px', background: '#f9fafb', textAlign: 'center', borderTop: '1px solid var(--border)' }}>
+        <h2 style={{ fontSize: '2rem', color: 'var(--text-dark)', marginBottom: 10 }}>About Us</h2>
+        <p style={{ fontSize: '1rem', color: 'var(--text-muted)', maxWidth: 800, margin: '0 auto 20px', lineHeight: 1.5 }}>
           We are a passionate bunch of tech enthusiasts from university who came together to build this project. Our mission is to explore how modern technology can streamline and revolutionize agricultural supply chains. Meet our team:
         </p>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '30px' }}>
+          <div className="logo" style={{ margin: 0, fontSize: '1.8rem', paddingBottom: '5px' }}>
+            <span style={{ background: 'var(--green-dark)', padding: '6px 16px', borderRadius: '8px', display: 'inline-block' }}>
+              <span style={{ color: '#ffffff' }}>Agri</span><span style={{ color: '#f59e0b' }}>Chain</span>
+            </span>
+          </div>
+        </div>
 
-        <div style={{ display: 'flex', gap: 20, justifyContent: 'center', flexWrap: 'wrap', maxWidth: 1000, margin: '0 auto' }}>
+        <div style={{ display: 'flex', gap: 15, justifyContent: 'center', flexWrap: 'wrap', maxWidth: 1000, margin: '0 auto' }}>
           {[
             { name: "Mohammed Rabbi Shanto", role: "Lead Systems Architect", email: "2222818@iub.edu.bd", image: "https://lh3.googleusercontent.com/a-/ALV-UjW-APoiyL3IjC2I5_A6PVJIiiUSU7Zri13LetX9NX0lbR-Bd_4=s544-p-k-rw-no" },
             { name: "Member 2", role: "Frontend UI/UX Eng", email: "[EMAIL_ADDRESS]" },
@@ -190,17 +197,17 @@ const Home = () => {
             { name: "Member 4", role: "AI & Predictve Models", email: "[EMAIL_ADDRESS]" },
             { name: "Member 5", role: "AgOps & Logistics", email: "[EMAIL_ADDRESS]" }
           ].map((team, i) => (
-            <div key={i} style={{ flex: '1 1 250px', background: 'var(--white)', padding: 24, borderRadius: 16, boxShadow: '0 4px 12px rgba(0,0,0,0.05)', border: '1px solid var(--border)' }}>
+            <div key={i} style={{ flex: '1 1 180px', background: 'var(--white)', padding: 16, borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.05)', border: '1px solid var(--border)' }}>
               {team.image ? (
-                <img src={team.image} alt={team.name} style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', margin: '0 auto 16px', display: 'block', border: '2px solid var(--border)' }} />
+                <img src={team.image} alt={team.name} style={{ width: 60, height: 60, borderRadius: '50%', objectFit: 'cover', margin: '0 auto 12px', display: 'block', border: '2px solid var(--border)' }} />
               ) : (
-                <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'var(--green-pale)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontSize: '1.8rem', fontWeight: 'bold', color: 'var(--green-dark)' }}>
+                <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'var(--green-pale)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', fontSize: '1.4rem', fontWeight: 'bold', color: 'var(--green-dark)' }}>
                   {team.name.charAt(0)}
                 </div>
               )}
-              <h4 style={{ fontSize: '1.1rem', color: 'var(--text-dark)', marginBottom: 4 }}>{team.name}</h4>
-              <div style={{ fontSize: '0.85rem', color: 'var(--green-mid)', fontWeight: 600, marginBottom: 8, textTransform: 'uppercase' }}>{team.role}</div>
-              <a href={`mailto:${team.email}`} style={{ fontSize: '0.9rem', color: 'var(--text-muted)', textDecoration: 'none' }}>{team.email}</a>
+              <h4 style={{ fontSize: '1rem', color: 'var(--text-dark)', marginBottom: 2 }}>{team.name}</h4>
+              <div style={{ fontSize: '0.75rem', color: 'var(--green-mid)', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase' }}>{team.role}</div>
+              <a href={`mailto:${team.email}`} style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textDecoration: 'none' }}>{team.email}</a>
             </div>
           ))}
         </div>
