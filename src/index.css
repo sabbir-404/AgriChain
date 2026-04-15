@@ -145,12 +145,20 @@ h4 {
 }
 
 .sidebar::-webkit-scrollbar {
-  width: 4px;
+  width: 8px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
 }
 
 .sidebar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.25);
   border-radius: 4px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
 }
 
 .sidebar-logo {
@@ -171,10 +179,12 @@ h4 {
   overflow-x: hidden;
   padding: 4px 0 8px;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
 }
-#sidebar-nav::-webkit-scrollbar { width: 3px; }
-#sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 3px; }
+#sidebar-nav::-webkit-scrollbar { width: 8px; }
+#sidebar-nav::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.05); border-radius: 4px; }
+#sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.25); border-radius: 4px; }
+#sidebar-nav::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.4); }
 
 
 .sidebar-logo span {
