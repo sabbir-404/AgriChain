@@ -4,7 +4,7 @@ import { RoleContext } from '../context/RoleContext';
 import axios from 'axios';
 
 const Layout = ({ children }) => {
-  const { currentRole, user, logout, updateUser } = useContext(RoleContext);
+  const { currentRole, user, logout, updateUser, token } = useContext(RoleContext);
   const location = useLocation();
   const navigate = useNavigate();
   const menuRef = useRef(null);
@@ -39,7 +39,9 @@ const Layout = ({ children }) => {
     e.preventDefault();
     setSaving(true); setSaveMsg('');
     try {
-      await axios.put('http://localhost:3001/api/auth/profile', form);
+      await axios.put('http://localhost:3001/api/auth/profile', form, {
+        headers: { Authorization: `Bearer ${token || localStorage.getItem('token')}` }
+      });
       updateUser({ first_name: form.first_name, last_name: form.last_name, email: form.email });
       setSaveMsg('✅ Profile updated successfully!');
       setTimeout(() => setShowEditModal(false), 1200);
